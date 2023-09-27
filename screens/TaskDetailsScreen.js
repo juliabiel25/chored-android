@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { doc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 
 import Input from "../components/Input";
 import ScreenContainer from "../components/ScreenContainer";
@@ -28,6 +28,15 @@ const TaskDetilasScreen = ({ route }) => {
     
     navigation.replace("Home");
   };
+
+  const handleDeleteTask = () => {
+    console.log('Deleting doc ', task.id);
+    const taskRef = doc(db, "tasks", task.id);
+    deleteDoc(taskRef)
+    .then(console.log('Done'));
+    
+    navigation.replace("Home");
+  };
   
 
   return (
@@ -47,6 +56,9 @@ const TaskDetilasScreen = ({ route }) => {
       <TouchableOpacity onPress={handleSubmitTask} style={styles.button}>
         <Text style={styles.buttonText}>Submit</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={handleDeleteTask} style={styles.redButton}>
+        <Text style={styles.buttonText}>Delete</Text>
+      </TouchableOpacity>
     </ScreenContainer>
   );
 };
@@ -62,6 +74,15 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#0782F9",
+    padding: 10,
+    borderRadius: 10,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10
+  },
+  redButton: {
+    backgroundColor: "#dd4447",
     padding: 10,
     borderRadius: 10,
     display: "flex",
@@ -84,6 +105,7 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   formContainer: {
-    gap: 20    
+    gap: 20,
+    marginBottom: 30
   }
 });

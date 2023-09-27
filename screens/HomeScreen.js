@@ -81,12 +81,6 @@ const HomeScreen = () => {
     <ScreenContainer hideGoBack>
       <View style={styles.header}>
         <Text style={styles.headerText}>All tasks</Text>
-         <Button
-        title="Press to Send Notification"
-        onPress={async () => {
-          await sendPushNotification(expoPushToken);
-        }}
-      />
         <TouchableOpacity onPress={handleAddTasks} style={styles.button}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>

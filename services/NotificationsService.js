@@ -17,10 +17,12 @@ export const createNotificationMessage = (expoPushToken, title, body, data) => {
     data,
   };
   console.log('Notification message: ', message);
+  return message;
 }
 
 // Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
 export async function sendPushNotification(message) {
+  console.log('Sending a push notification...');
   await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
     headers: {
@@ -29,11 +31,12 @@ export async function sendPushNotification(message) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(message),
-  });
+  }).then(console.log('Notification sent'));
 }
 
 export async function broadcastPushNotification(messages) {
-  messages.forEach(message => sendPushNotification(message));
+  console.log('Broadcasting a push notification');
+  messages.forEach(async (message) => await sendPushNotification(message));
 }
 
 export async function registerForPushNotificationsAsync() {

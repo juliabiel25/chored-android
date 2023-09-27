@@ -28,8 +28,6 @@ const AssigneePicker = ({ value, onChange, style }) => {
     const querySnapshot = await getDocs(collection(db, "users"));
     const data = [];
     querySnapshot.forEach(user => data.push(user.data()));
-    console.log("querySnapshot users: ", querySnapshot);
-    console.log("data users: ", data);
     const nextUsers = data.filter(user => user.uid !== currentUser.uid);
     console.log("next users: ", nextUsers);
     setUsers([currentUser, ...nextUsers]);

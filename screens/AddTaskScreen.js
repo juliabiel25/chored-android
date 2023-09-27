@@ -1,5 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { addDoc, collection } from "@firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "@firebase/firestore";
+import { broadcastPushNotification, createNotificationMessage, sendPushNotification } from "../services/NotificationsService";
+import { useEffect, useState } from "react";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Input from "../components/Input";
@@ -7,9 +9,10 @@ import ScreenContainer from "../components/ScreenContainer";
 import { auth } from "../firebase";
 import { db } from "../firebase";
 import { useNavigation } from "@react-navigation/core";
-import { useState } from "react";
 
 const AddTaskScreen = () => {
+
+
   const navigation = useNavigation();
   const [name, setName] = useState();
   const [description, setDescription] = useState();
@@ -19,6 +22,49 @@ const AddTaskScreen = () => {
   const handleDueDateChange = (event, newDate) => {
     setDueDate(newDate);
   };
+
+  const sendAssigneeNotification = async (assignee) => {
+    console.log('Sending new task notification to: ', assignee);
+
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const users = [];
+    querySnapshot.forEach(user => {
+      const userData = user.data();
+      // if (userData.uid != cuid) // temporarily broadcast to all to show it works
+        users.push(userData);
+    });
+
+    const targetUser = users.find(user => user.uid == assignee.uid);
+
+    const title = "New task";
+    const body = "A new task was assigned to you!"    
+    const message = createNotificationMessage(targetUser.expoPushToken, title, body);
+
+    await sendPushNotification(message);
+  }
+
+  const broadcastUnassignedNotification = async () => {
+    console.log('Broadcasting notifications about an unassigned task to all users');
+    
+    const cuid = auth.currentUser.uid;  
+    const querySnapshot = await getDocs(collection(db, "users"));
+    const users = [];
+    querySnapshot.forEach(user => {
+      const userData = user.data();
+      // if (userData.uid != cuid) // temporarily broadcast to all to show it works
+        users.push(userData);
+    });
+    
+    const targetPushTokens = users.filter(user => user.expoPushToken).map(user => user.expoPushToken);
+    console.log('Target push tokens: ', targetPushTokens);
+    
+    const title = "New task";
+    const body = "A new unasigned task was just added!"
+    const messages = targetPushTokens.map(token => createNotificationMessage(token, title, body));
+
+    await broadcastPushNotification(messages);
+    // await sendPushNotification({to: "ExponentPushToken[X42xZQN4xjHpXehbx7Kfol]", title: "uwu", sound: "default", body: "oh yeah"})
+  }
 
   const handleSubmitTask = async () => {
     const docRef = await addDoc(collection(db, "tasks"), {
@@ -30,13 +76,22 @@ const AddTaskScreen = () => {
       finished: false,
       assignedBy: assignee ? auth.currentUser.uid : undefined
     })
-      .then(console.log("Task successfully submitted!"))
+      .then(async () => {
+        console.log("Task successfully submitted!");
+        if (assignee) {
+          await sendAssigneeNotification(assignee);
+        }
+        else {
+          await broadcastUnassignedNotification();
+        }
+      })
       .catch(err =>
         console.log(
           "An error occured while submitting a new task to firestore: ",
           err
         )
       );
+
 
     navigation.replace("Home");
   };
