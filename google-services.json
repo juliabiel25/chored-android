@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1085094715889",
+    "project_id": "chored-73157",
+    "storage_bucket": "chored-73157.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085094715889:android:fc538256ce7dbce022e450",
+        "android_client_info": {
+          "package_name": "com.julia2m2.choredandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085094715889-cr11q95gr9co65u5emrc9oi67i1ihh85.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsVo7smD7Z6DvirvSidz-h0x_D0iWMXMg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085094715889-cr11q95gr9co65u5emrc9oi67i1ihh85.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
